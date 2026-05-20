@@ -1,0 +1,28 @@
+<h1>Каталог товаров</h1>
+
+<form method="get">
+    <input type="text" name="search" placeholder="Поиск">
+    <button type="submit">Найти</button>
+</form>
+
+<hr>
+
+{% for product in products %}
+
+<h3>{{ product.name }}</h3>
+
+<p>{{ product.price }}</p>
+
+<a href="/catalog/{{ product.id }}/">
+    Подробнее
+</a>
+
+<br><br>
+
+<a href="/cart/add/{{ product.id }}/">
+    Добавить в корзину
+</a>
+
+<hr>
+
+{% endfor %}
