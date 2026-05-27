@@ -3,6 +3,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
+from django.core.mail import send_mail
+from openpyxl import Workbook
+from django.conf import settings
+import os
+
 from .models import Product, Category, Manufacturer, Cart, CartItem
 
 def home(request):
@@ -84,14 +89,15 @@ def add_to_cart(request, product_id):
 
     item, created = CartItem.objects.get_or_create(
         cart=cart,
-        product=product
+        product=product,
+        defaults={'quantity': 1}
     )
 
     if not created:
         item.quantity += 1
         item.save()
 
-    return redirect('cart')
+    return redirect('/cart/')
 
 # Обновить корзину
 @login_required
@@ -116,3 +122,58 @@ def remove_from_cart(request, item_id):
     item.delete()
 
     return redirect('cart')
+
+@login_required
+def checkout(request):
+
+    cart = Cart.objects.get(user=request.user)
+    items = cart.items.all()
+
+    if request.method == 'POST':
+
+        # Создание Excel файла
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Чек"
+
+        ws.append(["Товар", "Количество", "Цена"])
+
+        total = 0
+
+        for item in items:
+            ws.append([
+                item.product.name,
+                item.quantity,
+                float(item.total_price())
+            ])
+
+            total += item.total_price()
+
+        ws.append([])
+        ws.append(["Общая сумма", "", float(total)])
+
+        # Папка для чеков
+        if not os.path.exists("receipts"):
+            os.makedirs("receipts")
+
+        file_path = f"receipts/receipt_{request.user.username}.xlsx"
+
+        wb.save(file_path)
+
+        # Отправка email
+        send_mail(
+            subject='Ваш заказ оформлен',
+            message=f'Спасибо за заказ! Сумма заказа: {total}',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[request.user.email],
+            fail_silently=True,
+        )
+
+        # Очистка корзины
+        items.delete()
+
+        return render(request, 'shop/success.html')
+
+    return render(request, 'shop/checkout.html', {
+        'items': items
+    })
