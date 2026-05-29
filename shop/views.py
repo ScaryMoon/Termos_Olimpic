@@ -10,6 +10,17 @@ import os
 
 from .models import Product, Category, Manufacturer, Cart, CartItem
 
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import (
+    ProductSerializer,
+    CategorySerializer,
+    ManufacturerSerializer,
+    CartSerializer,
+    CartItemSerializer
+)
+
 def home(request):
     return HttpResponse("""
     <h1>Главная страница магазина термосов.</h1>
@@ -177,3 +188,37 @@ def checkout(request):
     return render(request, 'shop/checkout.html', {
         'items': items
     })
+
+# API для товаров
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# API для категорий
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated]
+
+
+# API для производителей
+class ManufacturerViewSet(viewsets.ModelViewSet):
+    queryset = Manufacturer.objects.all()
+    serializer_class = ManufacturerSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# API для корзин
+class CartViewSet(viewsets.ModelViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# API для элементов корзины
+class CartItemViewSet(viewsets.ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAuthenticated]

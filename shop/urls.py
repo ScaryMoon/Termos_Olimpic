@@ -1,5 +1,14 @@
 from django.urls import path
 from . import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+router.register(r'products', views.ProductViewSet)
+router.register(r'categories', views.CategoryViewSet)
+router.register(r'manufacturers', views.ManufacturerViewSet)
+router.register(r'carts', views.CartViewSet)
+router.register(r'cartitems', views.CartItemViewSet)
 
 urlpatterns = [
     path('', views.home),
@@ -16,3 +25,5 @@ urlpatterns = [
 
     path('checkout/', views.checkout, name='checkout'),
 ]
+
+urlpatterns += router.urls
