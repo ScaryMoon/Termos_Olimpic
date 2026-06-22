@@ -1,0 +1,1 @@
+web: gunicorn termos_shop.wsgi
