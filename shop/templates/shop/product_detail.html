@@ -1,0 +1,34 @@
+<h1>{{ product.name }}</h1>
+
+<p><strong>Описание:</strong></p>
+<p>{{ product.description }}</p>
+
+<p><strong>Цена:</strong> {{ product.price }}</p>
+
+<p><strong>Количество на складе:</strong> {{ product.quantity }}</p>
+
+<p><strong>Категория:</strong> {{ product.category.name }}</p>
+
+<p><strong>Производитель:</strong> {{ product.manufacturer.name }}</p>
+
+{% if product.quantity > 0 %}
+
+<a href="/cart/add/{{ product.id }}/"
+class="btn btn-success">
+    Добавить в корзину
+
+</a>
+
+{% else %}
+
+<button class="btn btn-secondary" disabled>
+    Нет в наличии
+</button>
+
+{% endif %}
+
+<br><br>
+
+<a href="{% url 'catalog' %}">
+    Назад в каталог
+</a>

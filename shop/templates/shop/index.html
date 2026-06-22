@@ -1,0 +1,65 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+
+<div class="p-5 bg-light rounded">
+
+    <h1>Termos Shop</h1>
+
+    <p>
+        Лучшие термосы и термокружки.
+    </p>
+
+    <a href="/catalog/" class="btn btn-primary">
+        Перейти в каталог
+    </a>
+
+</div>
+
+<div class="mt-4">
+    <h2>Категории</h2>
+    <div class="d-flex gap-2 flex-wrap mb-4">
+        {% for category in categories %}
+            <a href="/catalog/?category={{ category.id }}" class="btn btn-outline-secondary">
+                {{ category.name }}
+            </a>
+        {% empty %}
+            <p class="text-muted">Категории еще не созданы в админке.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<h2 class="mt-4">
+Популярные товары
+</h2>
+
+<div class="row">
+
+{% for product in products %}
+
+<div class="col-md-4">
+
+<div class="card mb-3">
+
+<div class="card-body">
+
+<h5>{{ product.name }}</h5>
+
+<p>{{ product.price }}</p>
+
+<a href="/catalog/{{ product.id }}/"
+class="btn btn-primary">
+Подробнее
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

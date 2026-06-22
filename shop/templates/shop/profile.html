@@ -1,0 +1,80 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2>Личный кабинет</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label>Имя</label>
+        <input
+            type="text"
+            name="full_name"
+            class="form-control"
+            value="{{ profile.full_name }}"
+        >
+    </div>
+
+    <div class="mb-3">
+        <label>Телефон</label>
+        <input
+            type="text"
+            name="phone"
+            class="form-control"
+            value="{{ profile.phone }}"
+        >
+    </div>
+
+    <div class="mb-3">
+        <label>Адрес</label>
+        <textarea
+            name="address"
+            class="form-control"
+        >{{ profile.address }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Любимая категория</label>
+        <input
+            type="text"
+            name="favorite_category"
+            class="form-control"
+            value="{{ profile.favorite_category }}"
+        >
+    </div>
+
+    <div class="mb-3">
+        <label>Город доставки</label>
+        <input
+            type="text"
+            name="delivery_city"
+            class="form-control"
+            value="{{ profile.delivery_city }}"
+        >
+    </div>
+
+    <p>
+        Роль:
+        {% if user.is_staff %}
+            Администратор
+        {% else %}
+            Покупатель
+        {% endif %}
+    </p>
+
+    <button type="submit" class="btn btn-primary">
+        Сохранить
+    </button>
+    <a href="/accounts/password_change/" class="btn btn-warning">
+    Изменить пароль
+</a>
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,65 @@
+<h1>Каталог товаров</h1>
+
+<form method="get">
+    <select name="category">
+        <option value="">Все категории</option>
+
+        {% for category in categories %}
+            <option value="{{ category.id }}">
+                {{ category.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <select name="manufacturer">
+        <option value="">Все производители</option>
+
+        {% for manufacturer in manufacturers %}
+            <option value="{{ manufacturer.id }}">
+                {{ manufacturer.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <input type="text" name="search" placeholder="Поиск" value="{{ request.GET.search }}">
+    <button type="submit">Применить фильтры</button>
+</form>
+
+<hr>
+
+{% for product in page_obj %}
+
+<h3>{{ product.name }}</h3>
+
+<p>{{ product.price }}</p>
+
+<a href="/catalog/{{ product.id }}/">
+    Подробнее
+</a>
+
+<br><br>
+
+<a href="/cart/add/{{ product.id }}/">
+    Добавить в корзину
+</a>
+
+<hr>
+
+{% endfor %}
+
+<div>
+
+{% if page_obj.has_previous %}
+<a href="?page={{ page_obj.previous_page_number }}">
+Назад
+</a>
+{% endif %}
+
+Страница {{ page_obj.number }}
+
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">
+Вперёд
+</a>
+{% endif %}
+
+</div>

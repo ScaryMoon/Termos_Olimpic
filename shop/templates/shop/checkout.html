@@ -1,0 +1,32 @@
+<h1>Оформление заказа</h1>
+
+{% for item in items %}
+
+<p>
+    {{ item.product.name }}
+    -
+    {{ item.quantity }} шт.
+</p>
+
+{% endfor %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Адрес доставки:</label>
+    <br>
+
+    <input type="text" name="address">
+
+    <br><br>
+
+    <button type="submit">
+        Подтвердить заказ
+    </button>
+</form>
+
+<br>
+
+<a href="{% url 'cart' %}">
+    Назад в корзину
+</a>
