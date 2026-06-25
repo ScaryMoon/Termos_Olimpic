@@ -38,12 +38,24 @@
 
     <div class="mb-3">
         <label>Любимая категория</label>
-        <input
-            type="text"
-            name="favorite_category"
-            class="form-control"
-            value="{{ profile.favorite_category }}"
-        >
+        <select name="favorite_category" class="form-control">
+
+    <option value="">
+        Выберите категорию
+    </option>
+
+    {% for category in categories %}
+    <option
+        value="{{ category.name }}"
+        {% if profile.favorite_category == category.name %}
+            selected
+        {% endif %}
+    >
+        {{ category.name }}
+    </option>
+    {% endfor %}
+
+</select>
     </div>
 
     <div class="mb-3">
@@ -56,15 +68,30 @@
         >
     </div>
 
-    <p>
-        Роль:
-        {% if user.is_staff %}
-            Администратор
-        {% else %}
-            Покупатель
-        {% endif %}
-    </p>
+    <div class="mb-3">
 
+    <strong>Роль:</strong>
+
+    {% if user.is_staff %}
+        <span class="badge bg-danger">
+            Администратор
+        </span>
+    {% else %}
+        <span class="badge bg-success">
+            Покупатель
+        </span>
+    {% endif %}
+
+</div>
+<div class="mb-3">
+    <label>Email</label>
+    <input
+        type="email"
+        name="email"
+        class="form-control"
+        value="{{ user.email }}"
+    >
+</div>
     <button type="submit" class="btn btn-primary">
         Сохранить
     </button>
@@ -73,8 +100,84 @@
 </a>
 </form>
 
-{% endblock %}
+<script src="{% static 'js/profile.js' %}"></script>
+<hr>
 
+<h3>📦 История заказов</h3>
+
+{% for order in orders %}
+
+<div class="card mb-3">
+    <div class="card-body">
+
+        <h5>Заказ №{{ order.id }}</h5>
+
+        <p>
+            Дата:
+            {{ order.created_at }}
+        </p>
+
+        <p>
+            Сумма:
+            {{ order.total }} BYN
+        </p>
+
+        <p>
+            Адрес:
+            {{ order.address }}
+        </p>
+        <h6>Товары:</h6>
+
+<ul>
+
+{% for item in order.items.all %}
+
+<li>
+    {{ item.product.name }}
+    —
+    {{ item.quantity }} шт.
+</li>
+
+{% endfor %}
+
+</ul>
+
+    </div>
+</div>
+
+{% empty %}
+
+<p>У вас пока нет заказов.</p>
+
+{% endfor %}
+<hr>
+
+<h3>❤️ Избранные товары</h3>
+
+{% for favorite in favorites %}
+
+<div class="card mb-2">
+    <div class="card-body">
+
+        <h5>
+            <a href="/catalog/{{ favorite.product.id }}/">
+                {{ favorite.product.name }}
+            </a>
+        </h5>
+
+        <p>
+            Цена: {{ favorite.product.price }} BYN
+        </p>
+
+    </div>
+</div>
+
+{% empty %}
+
+<p>Избранных товаров нет.</p>
+
+{% endfor %}
+{% endblock %}
 {% block scripts %}
 <script src="{% static 'js/profile.js' %}"></script>
 {% endblock %}

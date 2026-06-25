@@ -11,7 +11,7 @@ router.register(r'carts', views.CartViewSet)
 router.register(r'cartitems', views.CartItemViewSet)
 
 urlpatterns = [
-    path('', views.index, name='home'),
+    path('', views.home, name='home'),
     path('about/', views.about),
     path('store/', views.store),
 
@@ -24,6 +24,7 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name = 'remove_from_cart'),
 
     path('checkout/', views.checkout, name='checkout'),
+    path('favorite/add/<int:product_id>/', views.add_to_favorites, name='add_to_favorites'),
 ]
 
 urlpatterns += router.urls

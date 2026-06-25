@@ -1,32 +1,80 @@
-<h1>Оформление заказа</h1>
+{% extends 'shop/base.html' %}
 
-{% for item in items %}
+{% block content %}
 
-<p>
-    {{ item.product.name }}
-    -
-    {{ item.quantity }} шт.
-</p>
+<div class="row justify-content-center">
 
-{% endfor %}
+    <div class="col-md-8">
 
-<form method="POST">
-    {% csrf_token %}
+        <div class="card shadow-sm">
 
-    <label>Адрес доставки:</label>
-    <br>
+            <div class="card-body">
 
-    <input type="text" name="address">
+                <h1 class="mb-4">
+                    Оформление заказа
+                </h1>
 
-    <br><br>
+                <h5>Товары:</h5>
 
-    <button type="submit">
-        Подтвердить заказ
-    </button>
-</form>
+                <ul class="list-group mb-4">
 
-<br>
+                    {% for item in items %}
 
-<a href="{% url 'cart' %}">
-    Назад в корзину
-</a>
+                    <li class="list-group-item d-flex justify-content-between">
+
+                        <span>
+                            {{ item.product.name }}
+                        </span>
+
+                        <span>
+                            {{ item.quantity }} шт.
+                        </span>
+
+                    </li>
+
+                    {% endfor %}
+
+                </ul>
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Адрес доставки
+                        </label>
+
+                        <input
+                            type="text"
+                            name="address"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        Подтвердить заказ
+                    </button>
+
+                    <a href="{% url 'cart' %}"
+                       class="btn btn-secondary">
+                        Назад
+                    </a>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

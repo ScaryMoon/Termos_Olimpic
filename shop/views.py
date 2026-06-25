@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from django.core.mail import send_mail
 from openpyxl import Workbook
@@ -9,7 +10,7 @@ from django.conf import settings
 import os
 
 from django.core.paginator import Paginator
-from .models import Product, Category, Manufacturer, Cart, CartItem
+from .models import Product, Category, Manufacturer, Cart, CartItem, Profile, Order, Favorite, OrderItem
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import viewsets
@@ -24,7 +25,6 @@ from django.contrib.auth import logout
 from django.shortcuts import redirect
 
 from .forms import RegisterForm
-from .models import Profile
 
 from .serializers import (
     ProductSerializer,
@@ -48,11 +48,13 @@ def register(request):
                 password=form.cleaned_data['password']
             )
 
-            Profile.objects.create(
+            Profile.objects.update_or_create(
                 user=user,
-                full_name=form.cleaned_data['full_name'],
-                phone=form.cleaned_data['phone'],
-                address=form.cleaned_data['address']
+                defaults={
+                    'full_name': form.cleaned_data['full_name'],
+                    'phone': form.cleaned_data['phone'],
+                    'address': form.cleaned_data['address']
+                }
             )
 
             return redirect('/accounts/login/')
@@ -71,13 +73,39 @@ def logout_view(request):
     return redirect('/')
 
 def home(request):
-    return HttpResponse("""
-    <h1>Главная страница магазина термосов.</h1>
-    
-    Перейти:
-    <p><a href = "/about/">Страница об авторе</a></p>
-    <p><a href = "/store/">Страница магазина</a></p>
-    """)
+    profile = None
+    recommended_products = []
+    favorite_products = []
+
+    if request.user.is_authenticated:
+
+        profile, created = Profile.objects.get_or_create(
+            user=request.user
+        )
+
+        favorite_products = Favorite.objects.filter(
+            user=request.user
+        )
+
+    if profile and profile.favorite_category:
+
+        recommended_products = Product.objects.filter(
+            category__name=profile.favorite_category
+        )[:4]
+
+    else:
+
+        recommended_products = Product.objects.all()[:4]
+
+    return render(
+        request,
+        'shop/home.html',
+        {
+            'profile': profile,
+            'recommended_products': recommended_products,
+            'favorite_products': favorite_products
+        }
+    )
 
 def about(request):
     return HttpResponse("""
@@ -145,6 +173,14 @@ def profile(request):
     profile, created = Profile.objects.get_or_create(
         user=request.user
     )
+    orders = Order.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+    
+    favorites = Favorite.objects.filter(
+        user=request.user
+    )
+    categories = Category.objects.all()
 
     if request.method == 'POST':
         profile.full_name = request.POST.get('full_name')
@@ -153,10 +189,16 @@ def profile(request):
         profile.favorite_category = request.POST.get('favorite_category')
         profile.delivery_city = request.POST.get('delivery_city')
 
+        request.user.email = request.POST.get('email')
+        request.user.save()
+
         profile.save()
 
     return render(request, 'shop/profile.html', {
-        'profile': profile
+        'profile': profile,
+        'favorites': favorites,
+        'orders': orders,
+        'categories': categories
     })
 
 # Корзина
@@ -225,6 +267,20 @@ def checkout(request):
     items = cart.items.all()
 
     if request.method == 'POST':
+        address = request.POST.get('address')
+
+        order = Order.objects.create(
+            user=request.user,
+            address=address,
+            total=cart.total_price()
+        )
+        for item in items:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
 
         # Создание Excel файла
         wb = Workbook()
@@ -258,7 +314,7 @@ def checkout(request):
         # Отправка email
         send_mail(
             subject='Ваш заказ оформлен',
-            message=f'Спасибо за заказ! Сумма заказа: {total}',
+            message=f'Спасибо за заказ! Сумма заказа: {total} BYN',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[request.user.email],
             fail_silently=True,
@@ -371,3 +427,19 @@ class MeAPIView(APIView):
             serializer.save()
 
         return Response(serializer.data)
+
+@login_required
+def add_to_favorites(request, product_id):
+
+    product = Product.objects.get(
+        id=product_id
+    )
+
+    Favorite.objects.get_or_create(
+        user=request.user,
+        product=product
+    )
+    return redirect('catalog')
+
+def about_site(request):
+    return render(request, 'shop/about_site.html')

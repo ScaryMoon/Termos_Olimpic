@@ -9,27 +9,29 @@
             <div class="card-body">
 
                 <h2 class="text-center mb-4">
-                    Вход в систему
+                    Регистрация
                 </h2>
 
                 <form method="post">
                     {% csrf_token %}
+
                     {{ form.as_p }}
 
-                    <button class="btn btn-primary w-100">
-                        Войти
+                    <button type="submit"
+                            class="btn btn-success w-100">
+                        Зарегистрироваться
                     </button>
                 </form>
 
                 <hr>
 
                 <p class="text-center">
-                    Нет аккаунта?
+                    Уже есть аккаунт?
                 </p>
 
-                <a href="{% url 'register' %}"
-                   class="btn btn-success w-100">
-                    Зарегистрироваться
+                <a href="/accounts/login/"
+                   class="btn btn-outline-primary w-100">
+                    Войти
                 </a>
 
             </div>

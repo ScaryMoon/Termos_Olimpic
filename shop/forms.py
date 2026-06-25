@@ -9,9 +9,32 @@ class RegisterForm(forms.ModelForm):
     )
 
     full_name = forms.CharField()
-    phone = forms.CharField()
-    address = forms.CharField()
-
+    phone = forms.RegexField(
+    regex=r'^\+375\d{9}$',
+    error_messages={
+        'invalid': 'Введите номер в формате +375291234567'
+    },
+    widget=forms.TextInput(
+        attrs={
+            'placeholder': '+375291234567'
+        }
+    )
+)
+    address = forms.CharField(
+    widget=forms.Textarea(
+        attrs={
+            'placeholder': 'Например: г. Минск, ул. Ленина, д. 10, кв. 15',
+            'rows': 3
+        }
+    )
+)
+    email = forms.EmailField(
+    widget=forms.EmailInput(
+        attrs={
+            'placeholder': 'example@gmail.com'
+        }
+    )
+)
     class Meta:
         model = User
         fields = ['username', 'email', 'password']

@@ -1,7 +1,30 @@
-<h1>Заказ успешно оформлен!</h1>
+{% extends 'shop/base.html' %}
 
-<p>Спасибо за покупку!</p>
+{% block content %}
 
-<a href="{% url 'catalog' %}">
-    Вернуться в каталог
+<div class="alert alert-success text-center">
+
+    <h2>✅ Заказ успешно оформлен!</h2>
+
+    <p>
+        Спасибо за покупку.
+    </p>
+
+    <p>
+        <div class="alert alert-info mt-3">
+    📧 Электронный чек отправлен на вашу почту.
+    <strong>{{ email }}</strong>
+</div>
+    </p>
+
+</div>
+
+<a href="{% url 'catalog' %}" class="btn btn-primary">
+    Перейти в каталог
 </a>
+
+<a href="{% url 'home' %}" class="btn btn-outline-secondary">
+    На главную
+</a>
+
+{% endblock %}

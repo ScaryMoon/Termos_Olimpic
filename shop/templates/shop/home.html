@@ -1,0 +1,128 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+
+<div class="text-center mb-5">
+
+    <h1>🧊 Добро пожаловать в Termos Shop</h1>
+
+    <p class="lead">
+        Лучшие термосы и термокружки для путешествий,
+        спорта и повседневной жизни.
+    </p>
+
+    <a href="{% url 'catalog' %}" class="btn btn-primary btn-lg">
+        Перейти в каталог
+    </a>
+
+</div>
+
+{% if user.is_authenticated %}
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h4>Ваш профиль</h4>
+
+        <p>
+    Любимая категория:
+    <strong>{{ profile.favorite_category }}</strong>
+</p>
+
+<a href="/catalog/"
+   class="btn btn-outline-primary">
+    Смотреть товары
+</a>
+
+        <p>
+            Город доставки:
+            <strong>
+                {{ profile.delivery_city|default:"Не указан" }}
+            </strong>
+        </p>
+
+    </div>
+</div>
+
+{% endif %}
+
+{% if recommended_products %}
+
+<h2 class="mb-4">
+    Рекомендуем для вас
+</h2>
+
+<div class="row">
+
+{% for product in recommended_products %}
+
+<div class="col-md-3">
+
+    <div class="card h-100">
+
+        <div class="card-body">
+
+            <h5>{{ product.name }}</h5>
+
+            <p>
+                {{ product.price }} BYN
+            </p>
+
+            <a href="/catalog/{{ product.id }}/"
+               class="btn btn-outline-primary">
+                Подробнее
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+{% if favorite_products %}
+
+<h2 class="mt-5">
+    ❤️ Ваше избранное
+</h2>
+
+<div class="row">
+
+{% for favorite in favorite_products %}
+
+<div class="col-md-3 mb-3">
+
+    <div class="card h-100">
+
+        <div class="card-body">
+
+            <h5>
+                {{ favorite.product.name }}
+            </h5>
+
+            <p>
+                {{ favorite.product.price }} BYN
+            </p>
+
+            <a href="/catalog/{{ favorite.product.id }}/"
+               class="btn btn-primary">
+                Подробнее
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 {% csrf_token %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
@@ -20,6 +20,7 @@
         <div>
 
             <a class="btn btn-light" href="/">Главная</a>
+            <a class="btn btn-light" href="/about-site/">О сайте</a>
 
             <a class="btn btn-light" href="/catalog/">
                 Каталог
@@ -48,15 +49,15 @@
 
     </div>
 </nav>
-
-<div class="container mt-4">
+<main class="flex-grow-1">
+<div class="container-fluid px-4 mt-4">
 
     {% block content %}
     {% endblock %}
 
 </div>
-
-<footer class="bg-dark text-white text-center p-3 mt-5">
+</main>
+<footer class="bg-dark text-white text-center p-3 mt-auto">
     © Termos Shop
 </footer>
 
