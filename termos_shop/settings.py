@@ -41,6 +41,9 @@ ALLOWED_HOSTS = config(
     default='127.0.0.1,localhost,.up.railway.app'
 ).split(',')
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://web-production-e90dc.up.railway.app",
+]
 # Application definition
 
 INSTALLED_APPS = [
